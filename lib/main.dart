@@ -1,10 +1,12 @@
-// import 'dart:html';
 import 'dart:ui';
-
+import 'package:child_we_care/ChooseRole.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MaterialApp(
-  home: SplashScreen()
+  routes: {
+    '/':(context) => SplashScreen(),
+    '/chooseRole':(context) =>ChooseRole()
+  },
 ));
 
 class SplashScreen extends StatefulWidget {
@@ -13,12 +15,23 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  @override
+  void initState(){
+    super.initState();
+    Future.delayed(
+      Duration(seconds: 1),(){
+        Navigator.pushReplacementNamed(context, '/chooseRole');
+    },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.purple[50]
+          color: Colors.purple[100]
         ),
         child: Center(
           child: Column(

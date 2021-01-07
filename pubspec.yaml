@@ -23,6 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_circular_text: "^0.3.0"
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -63,6 +64,9 @@ flutter:
     - family: Prompt-Thin
       fonts:
         - asset: fonts/Prompt-Thin.ttf
+    - family: ArchitectsDaughter
+      fonts:
+        - asset: fonts/ArchitectsDaughter-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
