@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         child: Center(
           child: Column(
-
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 child: Image(
@@ -35,7 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   style: TextStyle(
                     fontFamily: 'Prompt-Thin',
                     fontSize: 20,
-                    fontWeight: FontWeight.bold
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 5
                   )
                 )
               )
