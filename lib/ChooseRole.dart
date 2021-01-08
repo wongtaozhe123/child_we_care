@@ -1,9 +1,14 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_circular_text/circular_text.dart';
+import 'package:child_we_care/main.dart';
+import 'package:child_we_care/register.dart';
 
 void main() => runApp(MaterialApp(
-    home: ChooseRole()
+    routes: {
+      '/':(context) => SplashScreen(),
+      '/chooseRole':(context) =>ChooseRole(),
+      '/register':(context) => Register()
+    },
 ));
 
 class ChooseRole extends StatefulWidget {
@@ -84,7 +89,7 @@ class _ChooseRoleState extends State<ChooseRole> {
                               ),
                               onTap: (){
                                 setState(() {
-
+                                  // Navigator.pushNamed(context, '')
                                 });
                               },
                             ),
@@ -102,10 +107,45 @@ class _ChooseRoleState extends State<ChooseRole> {
                     ],
                   )
                 ],
-              )
+              ),
             ],
           ),
         )
+      ),
+      bottomNavigationBar: BottomAppBar(
+          child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.purple[200].withOpacity(0.4)
+              ),
+              height: 50,
+              // alignment: Alignment.bottomLeft,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                      'DON\'T HAVE AN ACCOUNT YET?  ',
+                    style: TextStyle(
+                      fontSize: 12
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: Text(
+                      'CREATE ONE',
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15
+                      ),
+                    ),
+                  )
+                ],
+              ),
+
+          )
       ),
     );
   }

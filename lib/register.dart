@@ -1,9 +1,14 @@
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
+import 'package:child_we_care/main.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MaterialApp(
-  home: Register(),
+  routes: {
+    '/':(context) => SplashScreen(),
+    '/chooseRole':(context) =>ChooseRole(),
+    '/register':(context) => Register()
+  },
 ));
 
 class Register extends StatefulWidget {
@@ -14,6 +19,12 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+            color: Colors.purple[100]
+        ),
+      ),
+    );
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:flutter/material.dart';
+import 'package:child_we_care/register.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
     '/':(context) => SplashScreen(),
-    '/chooseRole':(context) =>ChooseRole()
+    '/chooseRole':(context) =>ChooseRole(),
+    '/register':(context) => Register()
   },
 ));
 
@@ -20,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState(){
     super.initState();
     Future.delayed(
-      Duration(seconds: 1),(){
+      Duration(seconds: 3),(){
         Navigator.pushReplacementNamed(context, '/chooseRole');
     },
     );
