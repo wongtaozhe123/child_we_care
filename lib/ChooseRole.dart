@@ -117,7 +117,7 @@ class _ChooseRoleState extends State<ChooseRole> {
               decoration: BoxDecoration(
                   color: Colors.purple[200].withOpacity(0.4)
               ),
-              height: 50,
+              height: 60,
               // alignment: Alignment.bottomLeft,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

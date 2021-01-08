@@ -33,6 +33,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  splashscreen: ^1.3.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +68,9 @@ flutter:
     - family: ArchitectsDaughter
       fonts:
         - asset: fonts/ArchitectsDaughter-Regular.ttf
+    - family: Redressed-Regular
+      fonts:
+        - asset: fonts/Redressed-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

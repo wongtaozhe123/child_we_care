@@ -20,10 +20,28 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-            color: Colors.purple[100]
-        ),
+      backgroundColor: Colors.purple[100],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Image(
+                image: AssetImage('assets/childwecare.png'),
+                alignment: Alignment.center,
+              ),
+              Container(
+                child: Text(
+                  'Let\'s get Started!',
+                  style: TextStyle(
+                    fontFamily: 'Redressed-Regular',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  )
+                ),
+              )
+            ],
+          ),
+        )
       ),
     );
   }
