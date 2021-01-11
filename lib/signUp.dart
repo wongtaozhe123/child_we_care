@@ -36,7 +36,15 @@ class _SignUpState extends State<SignUp> {
   String phoneError;
   final address=TextEditingController();
   String addressError;
+  String state="Kuala Lumpur";
+  final city=TextEditingController();
+  String cityError;
+  final postcode=TextEditingController();
+  String postcodeError;
+  final address1=TextEditingController();
+  String address1Error;
   int custChoice=3;
+  bool chkboxval=false;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +66,7 @@ class _SignUpState extends State<SignUp> {
                     '$g'
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 15,),
               Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                 child: Text(
@@ -281,7 +289,138 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
-
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(25, 0, 0, 10),
+                    child: FindDropdown(
+                      items: ['Johor','Kedah','Kelantan','Kuala Lumpur','Labuan','Malacca','Negeri Sembilan','Pahang','Penang',
+                      'Perak','Perlis','Putrajaya','Sabah','Sarawak','Terengganu'],
+                      label: "State",
+                      onChanged: (item){
+                        print(state);
+                        state=item;
+                        print(state);
+                      },
+                      selectedItem: 'Kuala Lumpur',
+                      labelStyle: TextStyle(
+                        fontSize: 13
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 65,
+                    width: 140,
+                    margin: EdgeInsets.fromLTRB(0, 40, 25, 10),
+                    child: TextFormField(
+                      controller: postcode,
+                      showCursor: true,
+                      maxLength: 5,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Post code',
+                        hintStyle: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 14
+                        ),
+                        filled: true,
+                        fillColor: Colors.white60.withOpacity(0.6),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.transparent),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red[600]),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorText: postcodeError,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(30,20,30,10),
+                height: 50,
+                child: TextFormField(
+                  controller: city,
+                  showCursor: true,
+                  decoration: InputDecoration(
+                    hintText: 'City',
+                    hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14
+                    ),
+                    filled: true,
+                    fillColor: Colors.white60.withOpacity(0.6),
+                    suffixIcon: Icon(Icons.location_on_outlined),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red[600]),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorText: cityError,
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(30,20,30,10),
+                height: 50,
+                child: TextFormField(
+                  controller: address1,
+                  showCursor: true,
+                  decoration: InputDecoration(
+                    hintText: 'Address',
+                    hintStyle: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14
+                    ),
+                    filled: true,
+                    fillColor: Colors.white60.withOpacity(0.6),
+                    suffixIcon: Icon(Icons.home),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red[600]),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorText: address1Error,
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(30, 20, 30, 30),
+                child: CheckboxListTile(
+                  value: chkboxval,
+                  title: Text(
+                    'I acknowledge childWeCare '
+                  ),
+                  onChanged: (bool value){
+                    setState(() {
+                      chkboxval=!chkboxval;
+                      print(chkboxval);
+                    });
+                  },
+                ),
+              ),
             ],
           ),
         ),
