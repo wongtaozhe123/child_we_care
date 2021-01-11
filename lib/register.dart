@@ -145,6 +145,7 @@ class _RegisterState extends State<Register> {
                 icon: Icons.email,
                 text: 'Continue with your Email',
                 backgroundColor: Colors.grey[500],
+                splashColor: Colors.grey[600],
                 onPressed: (){
                   setState(() {
                     RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");

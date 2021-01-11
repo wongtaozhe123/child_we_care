@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_signin_button: ^1.1.0
-
+  find_dropdown: ^0.2.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -33,7 +33,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  splashscreen: ^1.3.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -71,6 +70,9 @@ flutter:
     - family: Redressed-Regular
       fonts:
         - asset: fonts/Redressed-Regular.ttf
+    - family: YuseiMagic
+      fonts:
+        - asset: fonts/YuseiMagic-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
