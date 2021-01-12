@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:child_we_care/register.dart';
 import 'package:child_we_care/login.dart';
 import 'package:find_dropdown/find_dropdown.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -149,11 +150,12 @@ class _SignUpState extends State<SignUp> {
               SizedBox(height: 10,),
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
-                height: 50,
                 child: TextFormField(
                   controller: username,
                   showCursor: true,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Username',
                     hintStyle: TextStyle(
                       color: Colors.grey[500],
@@ -180,13 +182,14 @@ class _SignUpState extends State<SignUp> {
               ),
               // PASSWORD
               Container(
-                height: 50,
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
                 child: TextFormField(
                   controller: password,
                   showCursor: true,
                   obscureText: seePassword,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Password',
                     hintStyle: TextStyle(
                       color: Colors.grey[500],
@@ -221,12 +224,13 @@ class _SignUpState extends State<SignUp> {
               // CONFIRM PASSWORD
               Container(
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 10),
-                height: 50,
                 child: TextFormField(
                   controller: confirmpassword,
                   showCursor: true,
-                  obscureText: seePassword,
+                  obscureText: seeConfirmPassword,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Confirm Password',
                     hintStyle: TextStyle(
                       color: Colors.grey[500],
@@ -260,13 +264,14 @@ class _SignUpState extends State<SignUp> {
               ),
               //  PHONE
               Container(
-                height: 50,
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 10),
                 child: TextFormField(
                   controller: phone,
                   showCursor: true,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Contact Number',
                     hintStyle: TextStyle(
                       color: Colors.grey[500],
@@ -350,11 +355,12 @@ class _SignUpState extends State<SignUp> {
               // FILL IN CITY
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
-                height: 50,
                 child: TextFormField(
                   controller: city,
                   showCursor: true,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'City',
                     hintStyle: TextStyle(
                         color: Colors.grey[500],
@@ -382,11 +388,12 @@ class _SignUpState extends State<SignUp> {
               // FILL IN ADDRESS
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
-                height: 50,
                 child: TextFormField(
                   controller: address1,
                   showCursor: true,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Address',
                     hintStyle: TextStyle(
                         color: Colors.grey[500],
@@ -435,7 +442,78 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   onPressed: (){
-
+                    setState(() {
+                      RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                      RegExp rgContact=RegExp(r'(^(?:[+01])?[0-9]{10,11}$)');
+                      // RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");
+                      RegExp rgNum=RegExp(r'^([0-9]){5}$');
+                      if(custChoice==3){
+                        Fluttertoast.showToast(
+                            msg: "Please select role as Parent or Babysitter",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 15.0
+                        );
+                      }else{
+                        if(username.text.length<1){
+                          usernameError='Field cannot be left empty';
+                        }else{
+                          if(password.text.length<8||password.text.length>20){
+                            passwordError='Password must be between 8 to 20 characters';
+                            print(2369);
+                          }
+                          else{
+                            if(!rg.hasMatch(password.text)){
+                              passwordError='Need an uppercase, lowercase, number, and special character';
+                            }
+                            else{
+                              if(confirmpassword.text!=password.text){
+                                confirmpasswordError='This does not match your password';
+                              }
+                              else{
+                                if(phone.text.length<1){
+                                  phoneError='Field cannot be left empty';
+                                }
+                                else{
+                                  if(!rgContact.hasMatch(phone.text)){
+                                    phoneError='Please enter a valid phone number';
+                                  }
+                                  else{
+                                    if(postcode.text.length<1){
+                                      postcodeError='Field cannot be left empty';
+                                    }
+                                    else{
+                                      if(!rgNum.hasMatch(postcode.text)){
+                                        postcodeError='Please enter a valid postcode';
+                                      }
+                                      else{
+                                        if(city.text.length<1){
+                                          cityError='Field cannot be left empty';
+                                        }
+                                        else{
+                                          if(address1.text.length<1){
+                                            address1Error='Field cannot be left empty';
+                                          }
+                                          else{
+                                          //  FIREBASE START HERE
+                                            String role;
+                                            custChoice==0?role='Parent':role='Babysitter';
+                                            print('$g, $role, $username, $password, $phone, $state, $postcode, $city, $address1');
+                                            print(username.text);
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    });
                   },
                 ),
               )

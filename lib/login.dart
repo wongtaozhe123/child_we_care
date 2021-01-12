@@ -49,14 +49,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-              Container(
-                child: Text(
-                  'xxxx@xxx.com',
-                  style: TextStyle(
-                    fontSize: 18
-                  ),
-                ),
-              ),
               Row(
                 children: [
                   Expanded(child: Container(
@@ -179,7 +171,9 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   onPressed: (){
+                    setState(() {
 
+                    });
                   },
                 ),
               ),
