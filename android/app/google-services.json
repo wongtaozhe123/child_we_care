@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1007687710282",
+    "project_id": "childwecare-c0038",
+    "storage_bucket": "childwecare-c0038.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007687710282:android:23ffbac0e03cff969558b3",
+        "android_client_info": {
+          "package_name": "com.taozhe.child_we_care"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007687710282-rr7e6acg41vnrqkmbmcfrle6009tfb2t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.taozhe.child_we_care",
+            "certificate_hash": "f40a061eb0de58c5b7a0595d211f2ea37ed22e6a"
+          }
+        },
+        {
+          "client_id": "1007687710282-j9qc0e2f2dj7sf30oct2j7hlovqpm67j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCueirv3sxGomq3vp68RHpwFa3RyTx27vE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007687710282-j9qc0e2f2dj7sf30oct2j7hlovqpm67j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
