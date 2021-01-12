@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
 import 'package:child_we_care/signUp.dart';
+import 'package:child_we_care/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
@@ -11,6 +12,7 @@ void main() => runApp(MaterialApp(
     '/chooseRole':(context) =>ChooseRole(),
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
+    '/login':(context) => Login(),
   },
 ));
 
@@ -116,6 +118,7 @@ class _RegisterState extends State<Register> {
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 15),
                 child: TextFormField(
                   controller: email,
+                  keyboardType: TextInputType.emailAddress,
                   showCursor: true,
                   decoration: InputDecoration(
                     hintText: 'Your Email',

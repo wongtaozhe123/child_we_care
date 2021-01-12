@@ -4,6 +4,7 @@ import 'package:child_we_care/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:child_we_care/register.dart';
+import 'package:child_we_care/login.dart';
 import 'package:find_dropdown/find_dropdown.dart';
 
 void main() => runApp(MaterialApp(
@@ -12,6 +13,7 @@ void main() => runApp(MaterialApp(
     '/chooseRole':(context) =>ChooseRole(),
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
+    '/login':(context) => Login(),
   },
   // home: SignUp(),
 ));
@@ -256,7 +258,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
-            //  PHONE
+              //  PHONE
               Container(
                 height: 50,
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 10),
@@ -289,6 +291,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
+              // DROP DOWN LIST STATE
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -344,6 +347,7 @@ class _SignUpState extends State<SignUp> {
                   )
                 ],
               ),
+              // FILL IN CITY
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
                 height: 50,
@@ -375,6 +379,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
+              // FILL IN ADDRESS
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
                 height: 50,
@@ -406,21 +411,34 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
+              // REGISTER BUTTON
               Container(
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 30),
-                child: CheckboxListTile(
-                  value: chkboxval,
-                  title: Text(
-                    'I acknowledge childWeCare '
+                width: 250,
+                child: RaisedButton(
+                  // highlightColor: Colors.purple[400],
+                  // focusColor: Colors.purple[600],
+                  color: Colors.purple[400],
+                  padding: EdgeInsets.fromLTRB(25, 10, 25, 10),
+                  elevation: 20,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  onChanged: (bool value){
-                    setState(() {
-                      chkboxval=!chkboxval;
-                      print(chkboxval);
-                    });
+                  child: Text(
+                    'REGISTER',
+                    style: TextStyle(
+                      fontFamily: 'YuseiMagic',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      letterSpacing: 5,
+                      color: Colors.white
+                    ),
+                  ),
+                  onPressed: (){
+
                   },
                 ),
-              ),
+              )
             ],
           ),
         ),
