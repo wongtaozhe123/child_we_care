@@ -7,6 +7,8 @@ import 'package:child_we_care/register.dart';
 import 'package:child_we_care/login.dart';
 import 'package:find_dropdown/find_dropdown.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -23,6 +25,8 @@ class SignUp extends StatefulWidget {
   @override
   _SignUpState createState() => _SignUpState();
 }
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class _SignUpState extends State<SignUp> {
   bool parent=false;
@@ -441,8 +445,8 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.white
                     ),
                   ),
-                  onPressed: (){
-                    setState(() {
+                  onPressed: () async{
+                    // setState(() {
                       RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
                       RegExp rgContact=RegExp(r'(^(?:[+01])?[0-9]{10,11}$)');
                       // RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");
@@ -454,7 +458,7 @@ class _SignUpState extends State<SignUp> {
                             gravity: ToastGravity.CENTER,
                             backgroundColor: Colors.black,
                             textColor: Colors.white,
-                            fontSize: 15.0
+                            fontSize: 13.0
                         );
                       }else{
                         if(username.text.length<1){
@@ -500,8 +504,30 @@ class _SignUpState extends State<SignUp> {
                                           //  FIREBASE START HERE
                                             String role;
                                             custChoice==0?role='Parent':role='Babysitter';
-                                            print('$g, $role, $username, $password, $phone, $state, $postcode, $city, $address1');
-                                            print(username.text);
+                                            // print('$g, $role, $username, $password, $phone, $state, $postcode, $city, $address1');
+                                            try{
+                                              await Firebase.initializeApp();
+                                              UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: g, password: password.toString());
+                                              Fluttertoast.showToast(
+                                                  msg: "Account created",
+                                                  toastLength: Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  backgroundColor: Colors.black,
+                                                  textColor: Colors.white,
+                                                  fontSize: 13.0
+                                              );
+                                            }on FirebaseAuthException catch(e){
+                                              if(e.code=='email-already-in-use'){
+                                                Fluttertoast.showToast(
+                                                    msg: "This email has been used, please try with other email",
+                                                    toastLength: Toast.LENGTH_SHORT,
+                                                    gravity: ToastGravity.BOTTOM,
+                                                    backgroundColor: Colors.black,
+                                                    textColor: Colors.white,
+                                                    fontSize: 13.0
+                                                );
+                                              }
+                                            }
                                           }
                                         }
                                       }
@@ -513,7 +539,7 @@ class _SignUpState extends State<SignUp> {
                           }
                         }
                       }
-                    });
+                    // })
                   },
                 ),
               )

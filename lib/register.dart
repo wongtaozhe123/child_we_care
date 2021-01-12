@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
@@ -5,6 +6,11 @@ import 'package:child_we_care/signUp.dart';
 import 'package:child_we_care/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -21,9 +27,15 @@ class Register extends StatefulWidget {
   _RegisterState createState() => _RegisterState();
 }
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final fbLogin=FacebookLogin();
+Map facebookProfile;
+
 class _RegisterState extends State<Register> {
   final email=TextEditingController();
   String emailError;
+
+  GoogleSignIn _googleSignIn=GoogleSignIn(scopes: ['email']);
 
   @override
   Widget build(BuildContext context) {
@@ -79,12 +91,44 @@ class _RegisterState extends State<Register> {
               SizedBox(height:20),
               SignInButton(
                   Buttons.Google,
-                  onPressed: (){},
+                  onPressed:() async{
+                    try{
+                      await _googleSignIn.signIn();
+                      // print(_googleSignIn.currentUser.email);
+                      Navigator.pushReplacementNamed(context, '/signup', arguments: {
+                        'email': _googleSignIn.currentUser.email
+                      });
+                    }catch(e){
+                      print(e);
+                    }
+                  },
               ),
               SizedBox(height:5),
               SignInButton(
                 Buttons.FacebookNew,
-                onPressed: (){},
+                onPressed: () async{
+                  final result=await fbLogin.logIn(['email']);
+                  switch(result.status){
+                    case FacebookLoginStatus.loggedIn:
+                      final token=result.accessToken.token;
+                      final graphResponse=await http.get('https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=$token');
+                      final profile=json.decode(graphResponse.body);
+                      setState(() {
+                        facebookProfile=profile;
+                      });
+                      print(facebookProfile['email']);
+                      break;
+                    case FacebookLoginStatus.error:
+                      setState(() {
+                        Fluttertoast.showToast(msg: ErrorDescription(result.errorMessage.toString()).toString(),
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          backgroundColor: Colors.black,
+                          textColor: Colors.white,
+                        );
+                      });
+                  }
+                },
               ),
               SizedBox(height:20),
               Row(
