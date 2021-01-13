@@ -107,13 +107,15 @@ class _RegisterState extends State<Register> {
               SignInButton(
                 Buttons.FacebookNew,
                 onPressed: () async{
-                  final FacebookLoginResult result=await fbLogin.logIn(['email']);
+                  final FacebookLoginResult result=await fbLogin.logInWithReadPermissions(['email']);
+                  // final FacebookLoginResult result=await fbLogin.logIn(['email']);
+                  print("result as $result");
                   switch(result.status){
                     case FacebookLoginStatus.loggedIn:
                       final token=result.accessToken.token;
                       // final FacebookAccessToken accessToken=result.accessToken;
                       // print(accessToken.userId);
-                      final graphResponse=await http.get('https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=$token');
+                      final graphResponse=await http.get('https://graph.facebook.com/v2.12/me?fields=name,email&access_token=$token');
                       final profile=json.decode(graphResponse.body);
                       setState(() {
                         facebookProfile=profile;

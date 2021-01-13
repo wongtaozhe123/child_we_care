@@ -9,6 +9,7 @@ import 'package:find_dropdown/find_dropdown.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -27,6 +28,7 @@ class SignUp extends StatefulWidget {
 }
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+// final CollectionReference user=FirebaseFirestore.instance.collection('users');
 
 class _SignUpState extends State<SignUp> {
   bool parent=false;
@@ -508,6 +510,14 @@ class _SignUpState extends State<SignUp> {
                                             try{
                                               await Firebase.initializeApp();
                                               UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: g, password: password.toString());
+                                              final CollectionReference user=FirebaseFirestore.instance.collection('users');
+                                              user.add({
+                                                'email':g,
+                                                'role':custChoice==0?'parent':'babysitter',
+                                                'username':username.text,
+                                                'phone':phone.text
+                                              });
+                                              print('xxxxx');
                                               Fluttertoast.showToast(
                                                   msg: "Account created",
                                                   toastLength: Toast.LENGTH_SHORT,
@@ -526,6 +536,8 @@ class _SignUpState extends State<SignUp> {
                                                     textColor: Colors.white,
                                                     fontSize: 13.0
                                                 );
+                                              }else{
+                                                print(e);
                                               }
                                             }
                                           }
