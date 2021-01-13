@@ -28,7 +28,7 @@ class Register extends StatefulWidget {
 }
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final fbLogin=FacebookLogin();
+final FacebookLogin fbLogin=FacebookLogin();
 Map facebookProfile;
 
 class _RegisterState extends State<Register> {
@@ -107,16 +107,21 @@ class _RegisterState extends State<Register> {
               SignInButton(
                 Buttons.FacebookNew,
                 onPressed: () async{
-                  final result=await fbLogin.logIn(['email']);
+                  final FacebookLoginResult result=await fbLogin.logIn(['email']);
                   switch(result.status){
                     case FacebookLoginStatus.loggedIn:
                       final token=result.accessToken.token;
+                      // final FacebookAccessToken accessToken=result.accessToken;
+                      // print(accessToken.userId);
                       final graphResponse=await http.get('https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=$token');
                       final profile=json.decode(graphResponse.body);
                       setState(() {
                         facebookProfile=profile;
                       });
-                      print(facebookProfile['email']);
+                      print(facebookProfile);
+                      Navigator.pushReplacementNamed(context, '/signup', arguments: {
+                        'email': facebookProfile['email']
+                      });
                       break;
                     case FacebookLoginStatus.error:
                       setState(() {
