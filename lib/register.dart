@@ -98,7 +98,7 @@ class _RegisterState extends State<Register> {
               SizedBox(height:20),
               SignInButton(
                   Buttons.Google,
-                  onPressed:() async{
+                  onPressed:() {
                     setState(() async{
                       try{
                         await Firebase.initializeApp();
@@ -121,7 +121,7 @@ class _RegisterState extends State<Register> {
                           if(veracity){
                             await FirebaseAuth.instance.signInWithCredential(credential);
                             await tuser.add({'gmail':user.email});
-                            Navigator.pushReplacementNamed(context, '/signUp',arguments: {'email':user.email});
+                            Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':user.email});
                           }else{
                             Fluttertoast.showToast(
                                 msg: "The email has been registered before, please try again with other email",
@@ -218,7 +218,8 @@ class _RegisterState extends State<Register> {
                     contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Your Email',
                       hintStyle: TextStyle(
-                          color: Colors.grey[500]
+                        color: Colors.grey[500],
+                        fontSize: 14
                       ),
                     filled: true,
                     fillColor: Colors.white60.withOpacity(0.6),
@@ -357,7 +358,7 @@ class _RegisterState extends State<Register> {
                                     await user.sendEmailVerification();
                                     tuser.add({'gmail':email.text});
                                   }
-                                  Navigator.pushReplacementNamed(context, '/signUp',arguments: {'email',email.text});
+                                  Navigator.pushReplacementNamed(context, '/signup',arguments: {'email',email.text});
                                 }catch(e){
                                   if(e.code=='email-already-in-use'){
                                       Fluttertoast.showToast(

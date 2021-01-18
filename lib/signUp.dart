@@ -34,12 +34,6 @@ class _SignUpState extends State<SignUp> {
   bool babysitter=false;
   final username=TextEditingController();
   String usernameError;
-  final password=TextEditingController();
-  String passwordError;
-  bool seePassword=true;
-  final confirmpassword=TextEditingController();
-  String confirmpasswordError;
-  bool seeConfirmPassword=true;
   final phone=TextEditingController();
   String phoneError;
   final address=TextEditingController();
@@ -58,7 +52,7 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     Map gTemp=ModalRoute.of(context).settings.arguments;
     String g=gTemp['email'];
-    // print('$g');
+    print('$g');
     return Scaffold(
       backgroundColor: Colors.purple[100],
       body: Container(
@@ -67,14 +61,24 @@ class _SignUpState extends State<SignUp> {
             children: [
               Image(
                 image: AssetImage('assets/childwecare.png'),
-                fit: BoxFit.fitWidth,
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 25),
+                child: Text(
+                  'Setup your account!!',
+                  style: TextStyle(
+                    fontFamily: 'Prompt-Thin',
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
               ),
               Container(
                 child: Text(
                     '$g'
                 ),
               ),
-              SizedBox(height: 15,),
+              SizedBox(height: 10,),
               Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                 child: Text(
@@ -182,88 +186,6 @@ class _SignUpState extends State<SignUp> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     errorText: usernameError,
-                  ),
-                ),
-              ),
-              // PASSWORD
-              Container(
-                margin: EdgeInsets.fromLTRB(30,20,30,10),
-                child: TextFormField(
-                  controller: password,
-                  showCursor: true,
-                  obscureText: seePassword,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                    hintText: 'Password',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14
-                    ),
-                    filled: true,
-                    fillColor: Colors.white60.withOpacity(0.6),
-                    suffixIcon: IconButton(
-                      icon: Icon(seePassword?Icons.remove_red_eye:Icons.security),
-                      onPressed: (){
-                        setState(() {
-                          seePassword=!seePassword;
-                        });
-                      },
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red[600]),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorText: passwordError,
-                  ),
-                ),
-              ),
-              // CONFIRM PASSWORD
-              Container(
-                margin: EdgeInsets.fromLTRB(30, 20, 30, 10),
-                child: TextFormField(
-                  controller: confirmpassword,
-                  showCursor: true,
-                  obscureText: seeConfirmPassword,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                    hintText: 'Confirm Password',
-                    hintStyle: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14
-                    ),
-                    filled: true,
-                    fillColor: Colors.white60.withOpacity(0.6),
-                    suffixIcon: IconButton(
-                      icon: Icon(seeConfirmPassword?Icons.remove_red_eye:Icons.security),
-                      onPressed: (){
-                        setState(() {
-                          seeConfirmPassword=!seeConfirmPassword;
-                        });
-                      },
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red[600]),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    errorText: confirmpasswordError,
                   ),
                 ),
               ),
@@ -461,6 +383,63 @@ class _SignUpState extends State<SignUp> {
                             textColor: Colors.white,
                             fontSize: 13.0
                         );
+                      }else{
+                        if(username.text.length<1){
+                          usernameError='This field cannot be left empty';
+                        }
+                        else{
+                          if(phone.text.length<1){
+                            phoneError='This field cannot be left empty';
+                          }
+                          else{
+                            if(!rgContact.hasMatch(phone.text)){
+                              phoneError='Please enter a valid phone number';
+                            }
+                            else{
+                              if(postcode.text.length<1){
+                                postcodeError='Post Code must be 5 digits';
+                              }
+                              else{
+                                if(!rgNum.hasMatch(postcode.text)){
+                                  postcodeError='Please enter a valid post code';
+                                }
+                                else{
+                                  if(city.text.length<1){
+                                    cityError='This field cannot be left empty';
+                                  }
+                                  else{
+                                    if(address1.text.length<1){
+                                      address1Error='This field cannot be left empty';
+                                    }
+                                    else{
+                                      try{
+                                        final CollectionReference user=FirebaseFirestore.instance.collection('users');
+                                        user.add({
+                                          'email':g,
+                                          'role':custChoice==0?'parent':'babysitter',
+                                          'username':username.text,
+                                          'phone':phone.text,
+                                          'postcode':postcode.text,
+                                          'city':city.text,
+                                          'address':address1.text
+                                        });
+                                      }catch(e){
+                                        Fluttertoast.showToast(
+                                            msg: "$e",
+                                            toastLength: Toast.LENGTH_SHORT,
+                                            gravity: ToastGravity.BOTTOM,
+                                            backgroundColor: Colors.black,
+                                            textColor: Colors.white,
+                                            fontSize: 13.0
+                                        );
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     // })
                   },
