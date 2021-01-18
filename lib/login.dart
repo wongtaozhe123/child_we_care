@@ -31,8 +31,6 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    Map role=ModalRoute.of(context).settings.arguments;
-    String r=role['role'];
     return Scaffold(
       backgroundColor: Colors.purple[100],
       body: Center(
@@ -44,15 +42,14 @@ class _LoginState extends State<Login> {
               ),
               Container(
                 child: Text(
-                  '$r',
+                  'Welcome',
                   style: TextStyle(
-                      fontFamily: 'YuseiMagic',
-                      // fontWeight: FontWeight.bold,
-                      fontSize: 25
+                      fontFamily: 'ArchitectsDaughter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
               Row(
                 children: [
                   Expanded(child: Container(
@@ -224,7 +221,41 @@ class _LoginState extends State<Login> {
             ],
           ),
         ),
-      )
+      ),
+      bottomNavigationBar: BottomAppBar(
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.purple[200].withOpacity(0.4)
+            ),
+            height: 50,
+            // alignment: Alignment.bottomLeft,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'DON\'T HAVE AN ACCOUNT YET?  ',
+                  style: TextStyle(
+                      fontSize: 12
+                  ),
+                ),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: Text(
+                    'CREATE ONE',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
     );
   }
 }

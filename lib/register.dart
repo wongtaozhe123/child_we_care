@@ -95,10 +95,11 @@ class _RegisterState extends State<Register> {
                   ))
                 ],
               ),
+
               SizedBox(height:20),
               SignInButton(
                   Buttons.Google,
-                  onPressed:() {
+                  onPressed:() async{
                     setState(() async{
                       try{
                         await Firebase.initializeApp();
@@ -109,30 +110,22 @@ class _RegisterState extends State<Register> {
                           accessToken: googleAuth.accessToken,
                           idToken: googleAuth.idToken
                         );
-                        var veracity=true;
-                        FirebaseFirestore.instance.collection('email').get().then((querySnapshot) async {
-                          querySnapshot.docs.forEach((element) {
-                            print(element.data()['gmail']);
-                            if(element.data()['gmail']==user.email){
-                              veracity=false;
-                            }
-                          });
-                          print(veracity);
-                          if(veracity){
+                        FirebaseFirestore.instance.collection('email').where('gmail', isEqualTo:user.email).get().then((querySnapshot) async{
+                          if(querySnapshot.docs.isNotEmpty){
+                            Fluttertoast.showToast(
+                              msg: "The email has been registered before, please try again with other email",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                              fontSize: 13.0);
+                          }
+                          else if(querySnapshot.docs.isEmpty){
                             await FirebaseAuth.instance.signInWithCredential(credential);
                             await tuser.add({'gmail':user.email});
                             Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':user.email});
-                          }else{
-                            Fluttertoast.showToast(
-                                msg: "The email has been registered before, please try again with other email",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 13.0);
                           }
                         });
-
                       }on FirebaseAuthException catch(e){
                           Fluttertoast.showToast(
                             msg: "$e",
@@ -149,6 +142,8 @@ class _RegisterState extends State<Register> {
               SignInButton(
                 Buttons.FacebookNew,
                 onPressed: () async{
+                  setState(() {
+                  });
                   final FacebookLoginResult result=await fbLogin.logInWithReadPermissions(['email']);
                   // final FacebookLoginResult result=await fbLogin.logIn(['email']);
                   print("result as $result");
@@ -384,7 +379,7 @@ class _RegisterState extends State<Register> {
                     }
                 },
               ),
-              SizedBox(height: 20,)
+              SizedBox(height: 20,),
             ],
           ),
         ),
@@ -392,7 +387,6 @@ class _RegisterState extends State<Register> {
     );
   }
 }
-
 // try{
 // await Firebase.initializeApp();
 // UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: g, password: password.toString());

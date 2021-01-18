@@ -359,7 +359,7 @@ class _SignUpState extends State<SignUp> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'REGISTER',
+                    'CREATE ACCOUNT',
                     style: TextStyle(
                       fontFamily: 'YuseiMagic',
                       fontWeight: FontWeight.bold,
