@@ -120,8 +120,8 @@ class _RegisterState extends State<Register> {
                           print(veracity);
                           if(veracity){
                             await FirebaseAuth.instance.signInWithCredential(credential);
-                            tuser.add({'gmail':user.email});
-                            Navigator.pushReplacementNamed(context, '/login');
+                            await tuser.add({'gmail':user.email});
+                            Navigator.pushReplacementNamed(context, '/signUp',arguments: {'email':user.email});
                           }else{
                             Fluttertoast.showToast(
                                 msg: "The email has been registered before, please try again with other email",
@@ -357,7 +357,7 @@ class _RegisterState extends State<Register> {
                                     await user.sendEmailVerification();
                                     tuser.add({'gmail':email.text});
                                   }
-                                  Navigator.pushReplacementNamed(context, '/login');
+                                  Navigator.pushReplacementNamed(context, '/signUp',arguments: {'email',email.text});
                                 }catch(e){
                                   if(e.code=='email-already-in-use'){
                                       Fluttertoast.showToast(

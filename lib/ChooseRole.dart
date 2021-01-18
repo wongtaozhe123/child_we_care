@@ -63,7 +63,7 @@ class _ChooseRoleState extends State<ChooseRole> {
                                 ),
                                 onTap: (){
                                   setState(() {
-                                    Navigator.pushNamed(context, '/login');
+                                    Navigator.pushNamed(context, '/login',arguments: {'role':'Parent'});
                                   });
                                 },
                               )
@@ -93,7 +93,7 @@ class _ChooseRoleState extends State<ChooseRole> {
                               ),
                               onTap: (){
                                 setState(() {
-                                  Navigator.pushNamed(context, '/login');
+                                  Navigator.pushNamed(context, '/login',arguments: {'role':'Babysitter'});
                                 });
                               },
                             ),

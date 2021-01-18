@@ -31,6 +31,8 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    Map role=ModalRoute.of(context).settings.arguments;
+    String r=role['role'];
     return Scaffold(
       backgroundColor: Colors.purple[100],
       body: Center(
@@ -42,14 +44,15 @@ class _LoginState extends State<Login> {
               ),
               Container(
                 child: Text(
-                  'Welcome:',
+                  '$r',
                   style: TextStyle(
-                    fontFamily: 'ArchitectsDaughter',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
+                      fontFamily: 'YuseiMagic',
+                      // fontWeight: FontWeight.bold,
+                      fontSize: 25
                   ),
                 ),
               ),
+              SizedBox(height: 10,),
               Row(
                 children: [
                   Expanded(child: Container(
