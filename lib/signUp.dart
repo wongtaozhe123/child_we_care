@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
+import 'package:child_we_care/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:child_we_care/register.dart';
@@ -18,6 +19,7 @@ void main() => runApp(MaterialApp(
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
     '/login':(context) => Login(),
+    '/home':(context) => Home(),
   },
   // home: SignUp(),
 ));

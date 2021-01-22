@@ -3,9 +3,12 @@ import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
 import 'package:child_we_care/signUp.dart';
 import 'package:child_we_care/register.dart';
+import 'package:child_we_care/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -14,6 +17,7 @@ void main() => runApp(MaterialApp(
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
     '/login':(context) => Login(),
+    '/home':(context) => Home(),
   },
 ));
 
@@ -79,12 +83,13 @@ class _LoginState extends State<Login> {
               ),
               Container(
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
-                height: 50,
                 child: TextFormField(
                   keyboardType: TextInputType.emailAddress,
                   controller: email,
                   showCursor: true,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Email',
                     hintStyle: TextStyle(
                         color: Colors.grey[500],
@@ -110,13 +115,14 @@ class _LoginState extends State<Login> {
                 ),
               ),
               Container(
-                height: 50,
                 margin: EdgeInsets.fromLTRB(30,20,30,10),
                 child: TextFormField(
                   controller: password,
                   showCursor: true,
                   obscureText: seePassword,
                   decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.fromLTRB(10, 10, 0, 0),
                     hintText: 'Password',
                     hintStyle: TextStyle(
                         color: Colors.grey[500],
@@ -171,9 +177,45 @@ class _LoginState extends State<Login> {
                         color: Colors.white
                     ),
                   ),
-                  onPressed: (){
+                  onPressed: () async{
                     setState(() {
-
+                      if(email.text.length<1){
+                        emailError='This field cannot be left empty';
+                      }
+                      else{
+                        if(password.text.length<1){
+                          passwordError='This field cannot be left empty';
+                        }
+                        else{
+                          setState(() async{
+                            try{
+                              await Firebase.initializeApp();
+                              final UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
+                              Navigator.pushReplacementNamed(context,'/home');
+                            }on FirebaseAuthException catch(e){
+                              if (e.code=='user-not-found'){
+                                Fluttertoast.showToast(
+                                    msg: "This email is not found, please sign up if you've not yet register",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.black,
+                                    textColor: Colors.white,
+                                    fontSize: 13.0
+                                );
+                              }else if(e.code=='wrong-password'){
+                                Fluttertoast.showToast(
+                                    msg: "The password is incorrect, please try again",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    backgroundColor: Colors.black,
+                                    textColor: Colors.white,
+                                    fontSize: 13.0
+                                );
+                              }
+                            }
+                          });
+                        }
+                      }
                     });
                   },
                 ),

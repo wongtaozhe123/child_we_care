@@ -13,6 +13,7 @@ void main() => runApp(MaterialApp(
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
     '/login':(context) => Login(),
+    '/home':(context) => Home(),
   },
 ));
 

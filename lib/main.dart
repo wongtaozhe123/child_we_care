@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:child_we_care/register.dart';
 import 'package:child_we_care/signUp.dart';
 import 'package:child_we_care/login.dart';
+import 'package:child_we_care/home.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -12,6 +13,7 @@ void main() => runApp(MaterialApp(
     '/register':(context) => Register(),
     '/signup':(context) => SignUp(),
     '/login':(context) => Login(),
+    '/home':(context) => Home(),
   },
 ));
 
