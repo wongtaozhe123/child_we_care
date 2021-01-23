@@ -196,7 +196,7 @@ class _LoginState extends State<Login> {
                             try{
                               await Firebase.initializeApp();
                               final UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
-                              Navigator.pushReplacementNamed(context,'/home');
+                              Navigator.pushReplacementNamed(context,'/signup',arguments: {'email':email.text});
                             }on FirebaseAuthException catch(e){
                               if (e.code=='user-not-found'){
                                 Fluttertoast.showToast(
@@ -276,11 +276,9 @@ class _LoginState extends State<Login> {
                             final User currentUser = _auth.currentUser;
                             assert(user.uid==currentUser.uid);
                           }
-                          print('xxxxxxxxxx');
-                          Navigator.pushReplacementNamed(context, '/home');
+                          Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':user.email});
                         }
                         else if(querySnapshot.docs.isEmpty){
-                          print('yyyyyyyyyyy');
                           Fluttertoast.showToast(
                               msg: "This email hasn\'t been register before, please login with other email",
                               toastLength: Toast.LENGTH_SHORT,

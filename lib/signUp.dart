@@ -10,6 +10,8 @@ import 'package:find_dropdown/find_dropdown.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(MaterialApp(
@@ -76,13 +78,31 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               Container(
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(2),
+                    child: InkWell(
+                      child: Image(
+                        image: AssetImage('assets/defaultUser.png'),
+                        width: 140,
+                        height: 140,
+                      ),
+                      onTap: (){
+
+                      },
+                    ),
+                  )
+                ),
+              ),
+              SizedBox(height: 5),
+              Container(
                 child: Text(
                     '$g'
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(height: 25,),
               Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                 child: Text(
                   'I am a:',
                   style: TextStyle(
