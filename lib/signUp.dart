@@ -1,4 +1,4 @@
-import 'dart:html';
+import 'dart:io';
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
@@ -14,6 +14,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart';
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -56,6 +57,21 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    Future getImage() async{
+      // ignore: deprecated_member_use
+      final img=await ImagePicker.pickImage(source: ImageSource.camera);
+      setState(() {
+        _img=File(img.path);
+      });
+    }
+    Future uploadPic2Firebase(BuildContext context) async{
+      String filename=basename(_img.path);
+      StorageReference firebaseStorageRef=FirebaseStorage.instance.ref().child('profilePic/$filename');
+      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_img);
+      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+      taskSnapshot.ref.getDownloadURL().then((value)=>print('Done $value'));
+    }
+
     Map gTemp=ModalRoute.of(context).settings.arguments;
     String g=gTemp['email'];
     return Scaffold(
@@ -83,11 +99,12 @@ class _SignUpState extends State<SignUp> {
                 children: [
                   Container(
                     child: IconButton(
-                      icon: Icon(Icons.camera_alt),
+                      icon: Icon(Icons.add_a_photo_rounded),
                       color: Colors.black87,
                       splashColor: Colors.grey,
-                      onPressed: ()async{
-                        var img=await ImagePicker.pickImage(source: ImageSource.camera);
+                      onPressed: () {
+                        // var img=await ImagePicker.pickImage(source: ImageSource.camera);
+                        getImage();
                       },
                     ),
                   ),
@@ -98,7 +115,7 @@ class _SignUpState extends State<SignUp> {
                           borderRadius: BorderRadius.circular(2),
                           child: InkWell(
                             child: Image(
-                              image: AssetImage('assets/defaultUser.png'),
+                              image: (_img == null)? AssetImage('assets/defaultUser.png'):Image.file(_img),
                               width: 140,
                               height: 140,
                             ),
@@ -111,7 +128,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                   Container(
                     child: IconButton(
-                      icon: Icon(Icons.image_outlined),
+                      icon: Icon(Icons.photo),
                       color: Colors.black87,
                       splashColor: Colors.grey,
                       onPressed: (){},
