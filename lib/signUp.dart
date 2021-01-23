@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
@@ -51,12 +52,12 @@ class _SignUpState extends State<SignUp> {
   String address1Error;
   int custChoice=3;
   bool chkboxval=false;
+  File _img;
 
   @override
   Widget build(BuildContext context) {
     Map gTemp=ModalRoute.of(context).settings.arguments;
     String g=gTemp['email'];
-    print('$g');
     return Scaffold(
       backgroundColor: Colors.purple[100],
       body: Container(
@@ -77,23 +78,46 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
-              Container(
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(2),
-                    child: InkWell(
-                      child: Image(
-                        image: AssetImage('assets/defaultUser.png'),
-                        width: 140,
-                        height: 140,
-                      ),
-                      onTap: (){
-
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    child: IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      color: Colors.black87,
+                      splashColor: Colors.grey,
+                      onPressed: ()async{
+                        var img=await ImagePicker.pickImage(source: ImageSource.camera);
                       },
                     ),
+                  ),
+                  Container(
+                    child: ClipOval(
+                        child: Material(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(2),
+                          child: InkWell(
+                            child: Image(
+                              image: AssetImage('assets/defaultUser.png'),
+                              width: 140,
+                              height: 140,
+                            ),
+                            onTap: (){
+
+                            },
+                          ),
+                        )
+                    ),
+                  ),
+                  Container(
+                    child: IconButton(
+                      icon: Icon(Icons.image_outlined),
+                      color: Colors.black87,
+                      splashColor: Colors.grey,
+                      onPressed: (){},
+                    ),
                   )
-                ),
+                ],
               ),
               SizedBox(height: 5),
               Container(
