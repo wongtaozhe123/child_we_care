@@ -57,18 +57,25 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    Future getImage() async{
+    Future cameraImage() async{
       // ignore: deprecated_member_use
       final img=await ImagePicker.pickImage(source: ImageSource.camera);
       setState(() {
         _img=File(img.path);
       });
     }
+    Future galleryImage() async{
+      // ignore: deprecated_member_use
+      final img=await ImagePicker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        _img=File(img.path);
+      });
+    }
     Future uploadPic2Firebase(BuildContext context) async{
       String filename=basename(_img.path);
-      StorageReference firebaseStorageRef=FirebaseStorage.instance.ref().child('profilePic/$filename');
-      StorageUploadTask uploadTask = firebaseStorageRef.putFile(_img);
-      StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+      Reference firebaseStorageRef=FirebaseStorage.instance.ref().child('profilePic/$filename');
+      UploadTask uploadTask = firebaseStorageRef.putFile(_img);
+      TaskSnapshot taskSnapshot = await uploadTask;
       taskSnapshot.ref.getDownloadURL().then((value)=>print('Done $value'));
     }
 
@@ -103,8 +110,7 @@ class _SignUpState extends State<SignUp> {
                       color: Colors.black87,
                       splashColor: Colors.grey,
                       onPressed: () {
-                        // var img=await ImagePicker.pickImage(source: ImageSource.camera);
-                        getImage();
+                        cameraImage();
                       },
                     ),
                   ),
@@ -115,7 +121,7 @@ class _SignUpState extends State<SignUp> {
                           borderRadius: BorderRadius.circular(2),
                           child: InkWell(
                             child: Image(
-                              image: (_img == null)? AssetImage('assets/defaultUser.png'):Image.file(_img),
+                              image: (_img == null)? AssetImage('assets/defaultUser.png'):FileImage(_img),
                               width: 140,
                               height: 140,
                             ),
@@ -131,7 +137,9 @@ class _SignUpState extends State<SignUp> {
                       icon: Icon(Icons.photo),
                       color: Colors.black87,
                       splashColor: Colors.grey,
-                      onPressed: (){},
+                      onPressed: (){
+                        galleryImage();
+                      },
                     ),
                   )
                 ],
@@ -432,7 +440,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   onPressed: () async{
-                    // setState(() {
+                    setState(() {
                       RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
                       RegExp rgContact=RegExp(r'(^(?:[+01])?[0-9]{10,11}$)');
                       // RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");
@@ -475,27 +483,57 @@ class _SignUpState extends State<SignUp> {
                                       address1Error='This field cannot be left empty';
                                     }
                                     else{
-                                      try{
-                                        final CollectionReference user=FirebaseFirestore.instance.collection('users');
-                                        user.add({
-                                          'email':g,
-                                          'role':custChoice==0?'parent':'babysitter',
-                                          'username':username.text,
-                                          'phone':phone.text,
-                                          'postcode':postcode.text,
-                                          'city':city.text,
-                                          'address':address1.text
-                                        });
-                                      }catch(e){
-                                        Fluttertoast.showToast(
-                                            msg: "$e",
-                                            toastLength: Toast.LENGTH_SHORT,
-                                            gravity: ToastGravity.BOTTOM,
-                                            backgroundColor: Colors.black,
-                                            textColor: Colors.white,
-                                            fontSize: 13.0
-                                        );
-                                      }
+                                      setState(() async{
+                                        try{
+                                          final CollectionReference user=FirebaseFirestore.instance.collection('users');
+                                          FirebaseFirestore.instance.collection('users').where('email', isEqualTo:g).get().then((querySnapshot) async{
+                                            if(querySnapshot.docs.isNotEmpty){
+                                              Fluttertoast.showToast(
+                                                  msg: 'Account has been created',
+                                                  toastLength: Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  backgroundColor: Colors.black,
+                                                  textColor: Colors.white,
+                                                  fontSize: 13.0
+                                              );
+                                              Navigator.pushReplacementNamed(context, '/home', arguments: {'email':g});
+                                            }
+                                            else{
+                                              user.add({
+                                                'email':g,
+                                                'role':custChoice==0?'parent':'babysitter',
+                                                'username':username.text,
+                                                'phone':phone.text,
+                                                'postcode':postcode.text,
+                                                'city':city.text,
+                                                'address':address1.text,
+                                                'image':_img.path.toString()
+                                              });
+                                              if(_img!=null){
+                                                uploadPic2Firebase(context);
+                                              }
+                                              Fluttertoast.showToast(
+                                                  msg: 'Thank your for creating an account with us',
+                                                  toastLength: Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  backgroundColor: Colors.black,
+                                                  textColor: Colors.white,
+                                                  fontSize: 13.0
+                                              );
+                                              Navigator.pushReplacementNamed(context, '/home', arguments: {'email':g});
+                                            }
+                                          });
+                                        }catch(e){
+                                          Fluttertoast.showToast(
+                                              msg: "$e",
+                                              toastLength: Toast.LENGTH_SHORT,
+                                              gravity: ToastGravity.BOTTOM,
+                                              backgroundColor: Colors.black,
+                                              textColor: Colors.white,
+                                              fontSize: 13.0
+                                          );
+                                        }
+                                      });
                                     }
                                   }
                                 }
@@ -504,7 +542,7 @@ class _SignUpState extends State<SignUp> {
                           }
                         }
                       }
-                    // })
+                    });
                   },
                 ),
               )

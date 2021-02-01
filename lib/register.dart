@@ -13,6 +13,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart' as http;
 
 void main() => runApp(MaterialApp(
@@ -33,8 +34,8 @@ class Register extends StatefulWidget {
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FacebookLogin fbLogin=FacebookLogin();
-final GoogleSignIn _googleSignIn=GoogleSignIn();
 Map facebookProfile;
+final GoogleSignIn _googleSignIn=GoogleSignIn();
 
 class _RegisterState extends State<Register> {
   final email=TextEditingController();
@@ -144,24 +145,33 @@ class _RegisterState extends State<Register> {
               SignInButton(
                 Buttons.FacebookNew,
                 onPressed: () async{
-                  setState(() {
-                  });
                   final FacebookLoginResult result=await fbLogin.logInWithReadPermissions(['email']);
-                  // final FacebookLoginResult result=await fbLogin.logIn(['email']);
-                  print("result as $result");
+                  await Firebase.initializeApp();
+                  final CollectionReference tuser=FirebaseFirestore.instance.collection('email');
                   switch(result.status){
                     case FacebookLoginStatus.loggedIn:
                       final token=result.accessToken.token;
-                      // final FacebookAccessToken accessToken=result.accessToken;
-                      // print(accessToken.userId);
                       final graphResponse=await http.get('https://graph.facebook.com/v2.12/me?fields=name,email&access_token=$token');
                       final profile=json.decode(graphResponse.body);
                       setState(() {
                         facebookProfile=profile;
                       });
-                      print(facebookProfile);
-                      Navigator.pushReplacementNamed(context, '/signup', arguments: {
-                        'email': facebookProfile['email']
+                      final AuthCredential credential=FacebookAuthProvider.credential(token);
+                      await FirebaseAuth.instance.signInWithCredential(credential);
+                      FirebaseFirestore.instance.collection('email').where('gmail', isEqualTo:facebookProfile['email']).get().then((querySnapshot) async{
+                        if(querySnapshot.docs.isNotEmpty){
+                          Fluttertoast.showToast(
+                              msg: "The email has been registered before, please try again with other email",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                              fontSize: 13.0);
+                        }
+                        else if(querySnapshot.docs.isEmpty){
+                          await tuser.add({'gmail':facebookProfile['email']});
+                          Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':facebookProfile['email']});
+                        }
                       });
                       break;
                     case FacebookLoginStatus.error:
@@ -325,6 +335,7 @@ class _RegisterState extends State<Register> {
                 backgroundColor: Colors.grey[500],
                 splashColor: Colors.grey[600],
                 onPressed: () async{
+                  setState(() {
                     RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");
                     RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
                     if(email.text.length<1){
@@ -358,15 +369,15 @@ class _RegisterState extends State<Register> {
                                   Navigator.pushReplacementNamed(context, '/signup',arguments: {'email',email.text});
                                 }catch(e){
                                   if(e.code=='email-already-in-use'){
-                                      Fluttertoast.showToast(
+                                    Fluttertoast.showToast(
                                         msg: "This email has been used, please try with other email",
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
                                         backgroundColor: Colors.black,
                                         textColor: Colors.white,
                                         fontSize: 13.0
-                                      );
-                                    }else{
+                                    );
+                                  }else{
                                     print(e);
                                   }
                                 }
@@ -379,6 +390,7 @@ class _RegisterState extends State<Register> {
                         emailError='Please enter a valid email';
                       }
                     }
+                  });
                 },
               ),
               SizedBox(height: 20,),

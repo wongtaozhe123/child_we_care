@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:child_we_care/ChooseRole.dart';
 import 'package:child_we_care/main.dart';
@@ -5,12 +6,14 @@ import 'package:child_we_care/signUp.dart';
 import 'package:child_we_care/register.dart';
 import 'package:child_we_care/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MaterialApp(
   routes: {
@@ -30,6 +33,8 @@ class Login extends StatefulWidget {
 
 final FirebaseAuth _auth=FirebaseAuth.instance;
 final GoogleSignIn googleSignIn=GoogleSignIn();
+final FacebookLogin fbLogin=FacebookLogin();
+Map facebookProfile;
 
 class _LoginState extends State<Login> {
   final email=TextEditingController();
@@ -183,33 +188,54 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                   onPressed: () async{
-                    setState(() {
+                    // setState(() async{
                       if(email.text.length<1){
-                        emailError='This field cannot be left empty';
+                        setState(() {
+                          emailError='This field cannot be left empty';
+                        });
                       }
                       else{
                         if(password.text.length<1){
-                          passwordError='This field cannot be left empty';
+                          setState(() {
+                            passwordError='This field cannot be left empty';
+                          });
                         }
                         else{
-                          setState(() async{
+                          // setState(() async{
                             try{
                               await Firebase.initializeApp();
                               final UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
-                              Navigator.pushReplacementNamed(context,'/signup',arguments: {'email':email.text});
+                              FirebaseFirestore.instance.collection('users').where('email', isEqualTo:email.text).get().then((querySnapshot) async{
+                                if(querySnapshot.docs.isEmpty){
+                                  Navigator.pushNamed(context,'/signup',arguments: {'email':email.text});
+                                }
+                                else{
+                                  Navigator.pushReplacementNamed(context,'/home',arguments: {'email':email.text});
+                                }
+                              });
                             }on FirebaseAuthException catch(e){
                               if (e.code=='user-not-found'){
-                                Fluttertoast.showToast(
-                                    msg: "This email is not found, please sign up if you've not yet register",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.BOTTOM,
-                                    backgroundColor: Colors.black,
-                                    textColor: Colors.white,
-                                    fontSize: 13.0
-                                );
+                                  Fluttertoast.showToast(
+                                      msg: "This email is not found, please sign up if you've not yet register",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.black,
+                                      textColor: Colors.white,
+                                      fontSize: 13.0
+                                  );
                               }else if(e.code=='wrong-password'){
+                                  Fluttertoast.showToast(
+                                      msg: "The password is incorrect, please try again",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.black,
+                                      textColor: Colors.white,
+                                      fontSize: 13.0
+                                  );
+                              }
+                              else{
                                 Fluttertoast.showToast(
-                                    msg: "The password is incorrect, please try again",
+                                    msg: "This email does not exist, please sign up if you've not yet register",
                                     toastLength: Toast.LENGTH_SHORT,
                                     gravity: ToastGravity.BOTTOM,
                                     backgroundColor: Colors.black,
@@ -218,10 +244,10 @@ class _LoginState extends State<Login> {
                                 );
                               }
                             }
-                          });
+                          // });
                         }
                       }
-                    });
+                    // });
                   },
                 ),
               ),
@@ -276,7 +302,14 @@ class _LoginState extends State<Login> {
                             final User currentUser = _auth.currentUser;
                             assert(user.uid==currentUser.uid);
                           }
-                          Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':user.email});
+                          FirebaseFirestore.instance.collection('users').where('email', isEqualTo:googleSignInAccount.email).get().then((querySnapshot) async{
+                            if(querySnapshot.docs.isEmpty){
+                              Navigator.pushNamed(context,'/signup',arguments: {'email':googleSignInAccount.email});
+                            }
+                            else{
+                              Navigator.pushReplacementNamed(context,'/home',arguments: {'email':googleSignInAccount.email});
+                            }
+                          });
                         }
                         else if(querySnapshot.docs.isEmpty){
                           Fluttertoast.showToast(
@@ -303,14 +336,64 @@ class _LoginState extends State<Login> {
               SizedBox(height:5),
               SignInButton(
                 Buttons.FacebookNew,
-                onPressed: (){},
+                onPressed: () async{
+                  final result=await fbLogin.logInWithReadPermissions(['email']);
+                  switch(result.status){
+                    case FacebookLoginStatus.loggedIn:
+                      final token=result.accessToken.token;
+                      final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,email&access_token=$token');
+                      final profile=json.decode(graphResponse.body);
+                      setState(() {
+                        facebookProfile=profile;
+                      });
+                      await Firebase.initializeApp();
+                      final CollectionReference tuser=FirebaseFirestore.instance.collection('email');
+                      FirebaseFirestore.instance.collection('email').where('gmail', isEqualTo:facebookProfile['email']).get().then((querySnapshot) async{
+                        if(querySnapshot.docs.isNotEmpty){
+                          FirebaseFirestore.instance.collection('users').where('email', isEqualTo:facebookProfile['email']).get().then((querySnapshot) async{
+                            if(querySnapshot.docs.isEmpty){
+                              Navigator.pushNamed(context,'/signup',arguments: {'email':facebookProfile['email']});
+                            }
+                            else{
+                              Navigator.pushReplacementNamed(context,'/home',arguments: {'email':facebookProfile['email']});
+                            }
+                          });
+                        }
+                        else if(querySnapshot.docs.isEmpty){
+                          Fluttertoast.showToast(
+                              msg: "The email has been registered before, please try again with other email",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.black,
+                              textColor: Colors.white,
+                              fontSize: 13.0);
+                        }
+                      });
+                      break;
+                    case FacebookLoginStatus.cancelledByUser:
+                      setState(() {
+                      });
+                      break;
+                    case FacebookLoginStatus.error:
+                      setState(() {
+                        Fluttertoast.showToast(
+                            msg: ErrorDescription(result.errorMessage.toString()).toString(),
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            backgroundColor: Colors.black,
+                            textColor: Colors.white,
+                            fontSize: 13.0
+                        );
+                      });
+                  }
+                },
               ),
-              SignInButton(
-                Buttons.GoogleDark,
-                onPressed: ()async{
-                  await googleSignIn.signOut();
-                }
-              ),
+              // SignInButton(
+              //   Buttons.GoogleDark,
+              //   onPressed: ()async{
+              //     await googleSignIn.signOut();
+              //   }
+              // ),
               SizedBox(height:20),
 
             ],
