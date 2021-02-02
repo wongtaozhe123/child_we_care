@@ -46,6 +46,7 @@ class _RegisterState extends State<Register> {
   final confirmpassword=TextEditingController();
   String confirmpasswordError;
   bool seeConfirmPassword=true;
+  bool progress=false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +109,9 @@ class _RegisterState extends State<Register> {
                         await Firebase.initializeApp();
                         final CollectionReference tuser=FirebaseFirestore.instance.collection('email');
                         final user=await _googleSignIn.signIn();
+                        setState(() {
+                          progress=true;
+                        });
                         final googleAuth = await user.authentication;
                         final credential = GoogleAuthProvider.credential(
                           accessToken: googleAuth.accessToken,
@@ -115,6 +119,9 @@ class _RegisterState extends State<Register> {
                         );
                         FirebaseFirestore.instance.collection('email').where('gmail', isEqualTo:user.email).get().then((querySnapshot) async{
                           if(querySnapshot.docs.isNotEmpty){
+                            setState(() {
+                              progress=false;
+                            });
                             Fluttertoast.showToast(
                               msg: "The email has been registered before, please try again with other email",
                               toastLength: Toast.LENGTH_SHORT,
@@ -126,10 +133,16 @@ class _RegisterState extends State<Register> {
                           else if(querySnapshot.docs.isEmpty){
                             await FirebaseAuth.instance.signInWithCredential(credential);
                             await tuser.add({'gmail':user.email});
+                            setState(() {
+                              progress=false;
+                            });
                             Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':user.email});
                           }
                         });
                       }on FirebaseAuthException catch(e){
+                        setState(() {
+                          progress=false;
+                        });
                           Fluttertoast.showToast(
                             msg: "$e",
                             toastLength: Toast.LENGTH_SHORT,
@@ -139,6 +152,9 @@ class _RegisterState extends State<Register> {
                             fontSize: 13.0);
                       }
                     });
+                    setState(() {
+                      progress=true;
+                    });
                   },
               ),
               SizedBox(height:5),
@@ -146,6 +162,9 @@ class _RegisterState extends State<Register> {
                 Buttons.FacebookNew,
                 onPressed: () async{
                   final FacebookLoginResult result=await fbLogin.logInWithReadPermissions(['email']);
+                  setState(() {
+                    progress=true;
+                  });
                   await Firebase.initializeApp();
                   final CollectionReference tuser=FirebaseFirestore.instance.collection('email');
                   switch(result.status){
@@ -160,6 +179,9 @@ class _RegisterState extends State<Register> {
                       await FirebaseAuth.instance.signInWithCredential(credential);
                       FirebaseFirestore.instance.collection('email').where('gmail', isEqualTo:facebookProfile['email']).get().then((querySnapshot) async{
                         if(querySnapshot.docs.isNotEmpty){
+                          setState(() {
+                            progress=false;
+                          });
                           Fluttertoast.showToast(
                               msg: "The email has been registered before, please try again with other email",
                               toastLength: Toast.LENGTH_SHORT,
@@ -170,12 +192,18 @@ class _RegisterState extends State<Register> {
                         }
                         else if(querySnapshot.docs.isEmpty){
                           await tuser.add({'gmail':facebookProfile['email']});
+                          setState(() {
+                            progress=false;
+                          });
                           Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':facebookProfile['email']});
                         }
                       });
                       break;
                     case FacebookLoginStatus.error:
                       setState(() {
+                        setState(() {
+                          progress=false;
+                        });
                         Fluttertoast.showToast(msg: ErrorDescription(result.errorMessage.toString()).toString(),
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.CENTER,
@@ -184,6 +212,9 @@ class _RegisterState extends State<Register> {
                         );
                       });
                   }
+                  setState(() {
+                    progress=false;
+                  });
                 },
               ),
               SizedBox(height:20),
@@ -214,6 +245,7 @@ class _RegisterState extends State<Register> {
                   ))
                 ],
               ),
+              progress?CircularProgressIndicator():Container(),
               Container(
                 margin: EdgeInsets.fromLTRB(30, 15, 30, 10),
                 child: TextFormField(
@@ -360,15 +392,32 @@ class _RegisterState extends State<Register> {
                                 try{
                                   await Firebase.initializeApp();
                                   final CollectionReference tuser=FirebaseFirestore.instance.collection('email');
+                                  setState(() {
+                                    progress=true;
+                                  });
                                   User user=FirebaseAuth.instance.currentUser;
                                   UserCredential userCredential=await FirebaseAuth.instance.createUserWithEmailAndPassword(email: (email.text), password: password.text);
                                   if(!user.emailVerified){
                                     await user.sendEmailVerification();
                                     tuser.add({'gmail':email.text});
                                   }
-                                  Navigator.pushReplacementNamed(context, '/signup',arguments: {'email',email.text});
+                                  Fluttertoast.showToast(
+                                      msg: "Please remember to verify your email address",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      backgroundColor: Colors.black,
+                                      textColor: Colors.white,
+                                      fontSize: 13.0
+                                  );
+                                  setState(() {
+                                    progress=false;
+                                  });
+                                  Navigator.pushReplacementNamed(context, '/signup',arguments: {'email':email.text});
                                 }catch(e){
                                   if(e.code=='email-already-in-use'){
+                                    setState(() {
+                                      progress=false;
+                                    });
                                     Fluttertoast.showToast(
                                         msg: "This email has been used, please try with other email",
                                         toastLength: Toast.LENGTH_SHORT,
@@ -390,6 +439,9 @@ class _RegisterState extends State<Register> {
                         emailError='Please enter a valid email';
                       }
                     }
+                  });
+                  setState(() {
+                    progress=false;
                   });
                 },
               ),

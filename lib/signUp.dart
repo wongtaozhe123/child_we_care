@@ -54,6 +54,7 @@ class _SignUpState extends State<SignUp> {
   int custChoice=3;
   bool chkboxval=false;
   File _img;
+  bool progress=false;
 
   @override
   Widget build(BuildContext context) {
@@ -226,6 +227,9 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ],
               ),
+
+              progress?CircularProgressIndicator():Container(),
+
               // USERNAME
               SizedBox(height: 10,),
               Container(
@@ -486,6 +490,9 @@ class _SignUpState extends State<SignUp> {
                                       setState(() async{
                                         try{
                                           final CollectionReference user=FirebaseFirestore.instance.collection('users');
+                                          setState(() {
+                                            progress=true;
+                                          });
                                           FirebaseFirestore.instance.collection('users').where('email', isEqualTo:g).get().then((querySnapshot) async{
                                             if(querySnapshot.docs.isNotEmpty){
                                               Fluttertoast.showToast(
@@ -496,9 +503,15 @@ class _SignUpState extends State<SignUp> {
                                                   textColor: Colors.white,
                                                   fontSize: 13.0
                                               );
+                                              setState(() {
+                                                progress=false;
+                                              });
                                               Navigator.pushReplacementNamed(context, '/home', arguments: {'email':g});
                                             }
                                             else{
+                                              if(_img!=null){
+                                                uploadPic2Firebase(context);
+                                              }
                                               user.add({
                                                 'email':g,
                                                 'role':custChoice==0?'parent':'babysitter',
@@ -507,11 +520,8 @@ class _SignUpState extends State<SignUp> {
                                                 'postcode':postcode.text,
                                                 'city':city.text,
                                                 'address':address1.text,
-                                                'image':_img.path.toString()
+                                                'image':_img==null?'null':_img.path.toString()
                                               });
-                                              if(_img!=null){
-                                                uploadPic2Firebase(context);
-                                              }
                                               Fluttertoast.showToast(
                                                   msg: 'Thank your for creating an account with us',
                                                   toastLength: Toast.LENGTH_SHORT,
@@ -520,10 +530,16 @@ class _SignUpState extends State<SignUp> {
                                                   textColor: Colors.white,
                                                   fontSize: 13.0
                                               );
+                                              setState(() {
+                                                progress=false;
+                                              });
                                               Navigator.pushReplacementNamed(context, '/home', arguments: {'email':g});
                                             }
                                           });
                                         }catch(e){
+                                          setState(() {
+                                            progress=false;
+                                          });
                                           Fluttertoast.showToast(
                                               msg: "$e",
                                               toastLength: Toast.LENGTH_SHORT,
@@ -542,6 +558,9 @@ class _SignUpState extends State<SignUp> {
                           }
                         }
                       }
+                    });
+                    setState(() {
+                      progress=false;
                     });
                   },
                 ),

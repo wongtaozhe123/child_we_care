@@ -42,6 +42,7 @@ class _LoginState extends State<Login> {
   final password=TextEditingController();
   String passwordError;
   bool seePassword=true;
+  bool progress=false;
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +165,9 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
+
+              progress?CircularProgressIndicator():Container(),
+
               // LOGIN BUTTON
               Container(
                 margin: EdgeInsets.fromLTRB(30, 20, 30, 30),
@@ -202,19 +206,31 @@ class _LoginState extends State<Login> {
                         }
                         else{
                           // setState(() async{
+                          setState(() {
+                            progress=true;
+                          });
                             try{
                               await Firebase.initializeApp();
                               final UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
                               FirebaseFirestore.instance.collection('users').where('email', isEqualTo:email.text).get().then((querySnapshot) async{
                                 if(querySnapshot.docs.isEmpty){
+                                  setState(() {
+                                    progress=false;
+                                  });
                                   Navigator.pushNamed(context,'/signup',arguments: {'email':email.text});
                                 }
                                 else{
+                                  setState(() {
+                                    progress=false;
+                                  });
                                   Navigator.pushReplacementNamed(context,'/home',arguments: {'email':email.text});
                                 }
                               });
                             }on FirebaseAuthException catch(e){
                               if (e.code=='user-not-found'){
+                                setState(() {
+                                  progress=false;
+                                });
                                   Fluttertoast.showToast(
                                       msg: "This email is not found, please sign up if you've not yet register",
                                       toastLength: Toast.LENGTH_SHORT,
@@ -224,6 +240,9 @@ class _LoginState extends State<Login> {
                                       fontSize: 13.0
                                   );
                               }else if(e.code=='wrong-password'){
+                                setState(() {
+                                  progress=false;
+                                });
                                   Fluttertoast.showToast(
                                       msg: "The password is incorrect, please try again",
                                       toastLength: Toast.LENGTH_SHORT,
@@ -234,6 +253,9 @@ class _LoginState extends State<Login> {
                                   );
                               }
                               else{
+                                setState(() {
+                                  progress=false;
+                                });
                                 Fluttertoast.showToast(
                                     msg: "This email does not exist, please sign up if you've not yet register",
                                     toastLength: Toast.LENGTH_SHORT,
@@ -247,6 +269,9 @@ class _LoginState extends State<Login> {
                           // });
                         }
                       }
+                      setState(() {
+                        progress=false;
+                      });
                     // });
                   },
                 ),
@@ -288,6 +313,9 @@ class _LoginState extends State<Login> {
                       await Firebase.initializeApp();
                       final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
                       final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+                      setState(() {
+                        progress=true;
+                      });
                       final AuthCredential credential=GoogleAuthProvider.credential(
                         accessToken: googleSignInAuthentication.accessToken,
                         idToken: googleSignInAuthentication.idToken,
@@ -304,14 +332,23 @@ class _LoginState extends State<Login> {
                           }
                           FirebaseFirestore.instance.collection('users').where('email', isEqualTo:googleSignInAccount.email).get().then((querySnapshot) async{
                             if(querySnapshot.docs.isEmpty){
+                              setState(() {
+                                progress=false;
+                              });
                               Navigator.pushNamed(context,'/signup',arguments: {'email':googleSignInAccount.email});
                             }
                             else{
+                              setState(() {
+                                progress=false;
+                              });
                               Navigator.pushReplacementNamed(context,'/home',arguments: {'email':googleSignInAccount.email});
                             }
                           });
                         }
                         else if(querySnapshot.docs.isEmpty){
+                          setState(() {
+                            progress=false;
+                          });
                           Fluttertoast.showToast(
                               msg: "This email hasn\'t been register before, please login with other email",
                               toastLength: Toast.LENGTH_SHORT,
@@ -322,6 +359,9 @@ class _LoginState extends State<Login> {
                         }
                       });
                     }on FirebaseAuthException catch(e){
+                      setState(() {
+                        progress=false;
+                      });
                       Fluttertoast.showToast(
                         msg: "$e",
                         toastLength: Toast.LENGTH_SHORT,
@@ -331,12 +371,18 @@ class _LoginState extends State<Login> {
                         fontSize: 13.0);
                     }
                   });
+                  setState(() {
+                    progress=false;
+                  });
                 },
               ),
               SizedBox(height:5),
               SignInButton(
                 Buttons.FacebookNew,
                 onPressed: () async{
+                  setState(() {
+                    progress=true;
+                  });
                   final result=await fbLogin.logInWithReadPermissions(['email']);
                   switch(result.status){
                     case FacebookLoginStatus.loggedIn:
@@ -352,14 +398,23 @@ class _LoginState extends State<Login> {
                         if(querySnapshot.docs.isNotEmpty){
                           FirebaseFirestore.instance.collection('users').where('email', isEqualTo:facebookProfile['email']).get().then((querySnapshot) async{
                             if(querySnapshot.docs.isEmpty){
+                              setState(() {
+                                progress=false;
+                              });
                               Navigator.pushNamed(context,'/signup',arguments: {'email':facebookProfile['email']});
                             }
                             else{
+                              setState(() {
+                                progress=false;
+                              });
                               Navigator.pushReplacementNamed(context,'/home',arguments: {'email':facebookProfile['email']});
                             }
                           });
                         }
                         else if(querySnapshot.docs.isEmpty){
+                          setState(() {
+                            progress=false;
+                          });
                           Fluttertoast.showToast(
                               msg: "The email has been registered before, please try again with other email",
                               toastLength: Toast.LENGTH_SHORT,
@@ -372,9 +427,13 @@ class _LoginState extends State<Login> {
                       break;
                     case FacebookLoginStatus.cancelledByUser:
                       setState(() {
+                        progress=false;
                       });
                       break;
                     case FacebookLoginStatus.error:
+                      setState(() {
+                        progress=false;
+                      });
                       setState(() {
                         Fluttertoast.showToast(
                             msg: ErrorDescription(result.errorMessage.toString()).toString(),
@@ -386,6 +445,9 @@ class _LoginState extends State<Login> {
                         );
                       });
                   }
+                  setState(() {
+                    progress=false;
+                  });
                 },
               ),
               // SignInButton(
@@ -395,7 +457,6 @@ class _LoginState extends State<Login> {
               //   }
               // ),
               SizedBox(height:20),
-
             ],
           ),
         ),
