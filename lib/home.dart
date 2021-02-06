@@ -27,67 +27,113 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final search=TextEditingController();
+  List<String> tags=[];
   List<String> options=['vegetarian','autism','asperger','license','experienced'];
 
   @override
   Widget build(BuildContext context) {
+    Map gTemp=ModalRoute.of(context).settings.arguments;
+    String g=gTemp['email'];
     return Scaffold(
-      body: SingleChildScrollView(
+      body: Container(
         child: Column(
           children: [
-            Card(
-              color: Colors.grey[300],
-              shadowColor: Colors.white10,
-              elevation: 10,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            Container(
+              color: Colors.purple[100],
+              child: Column(
                 children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 50, 0, 10),
-                    height: 80,
-                    width: 80,
-                    child: Image(
-                      image: AssetImage('assets/cwc logo.png'),
-                    ),
+                  Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: SafeArea(
+                          child: ClipOval(
+                              child: Material(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2),
+                                child: InkWell(
+                                  child: Image(
+                                    // image: (_img == null)? AssetImage('assets/defaultUser.png'):FileImage(_img),
+                                    image: AssetImage('assets/defaultUser.png'),
+                                    width: 50,
+                                    height: 50,
+                                  ),
+                                  onTap: (){},
+                                ),
+                              )
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: Text(
+                          '$g'
+                        ),
+                      ),
+                    ],
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(0, 30, 0, 10),
-                    child: Text(
-                        'Child We Care',
-                        style: TextStyle(
-                            fontFamily: 'Prompt-Thin',
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1
-                        )
+                    padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    child: AnimSearchBar(
+                      rtl: false,
+                      width: 500,
+                      // suffixIcon: Icons.add,
+                      // prefixIcon: Icons.clear,
+                      textController: search,
+                      helpText: 'babysitter...',
+                      onSuffixTap: (){
+                        setState(() {
+                          print('$search xxxxx');
+                          search.clear();
+                        });
+                      },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-              child: AnimSearchBar(
-                rtl: false,
-                width: 500,
-                // suffixIcon: Icons.add,
-                // prefixIcon: Icons.clear,
-                textController: search,
-                helpText: 'babysitter...',
-                onSuffixTap: (){
-                  setState(() {
-                    print('$search xxxxx');
-                    search.clear();
-                  });
-                },
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+              child: ChipsChoice<String>.multiple(
+                  value: tags,
+                  onChanged: (val)=>setState((){
+                    tags=val;
+                    for(int x=0;x<tags.length;x++){
+                      print(tags[x]);
+                    }
+                  }),
+                  choiceItems: C2Choice.listFrom(
+                      source: options,
+                      value: (i,v)=>v,
+                      label: (i,v)=>v,
+                  ),
+                choiceActiveStyle: (
+                  C2ChoiceStyle(
+                    brightness: Brightness.dark,
+                    color: Colors.purple
+                  )
+                ),
               ),
             ),
-            Container(
-              child: Text(
-                'Taozhe'
-              )
-            )
           ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.purple[200],
+        child: Container(
+          height: 60,
+          color: Colors.purple[200].withOpacity(0.4),
+          child: Row(
+            children: [
+              IconButton(
+                  icon: Icon(
+                    Icons.home_filled,
+
+                  ),
+                  onPressed: null,
+              )
+            ],
+          ),
         ),
       ),
     );
