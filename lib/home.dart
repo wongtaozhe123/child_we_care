@@ -83,7 +83,7 @@ class _HomeState extends State<Home> {
                       helpText: 'babysitter...',
                       onSuffixTap: (){
                         setState(() {
-                          print('$search xxxxx');
+                          print(search.text + 'xxxxx');
                           search.clear();
                         });
                       },

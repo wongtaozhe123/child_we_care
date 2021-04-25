@@ -369,7 +369,7 @@ class _RegisterState extends State<Register> {
                 onPressed: () async{
                   setState(() {
                     RegExp rgEmail=RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]");
-                    RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~+-/(){}`~|"%^=_:;?<>]).{8,}$');
+                    RegExp rg=RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~+-/(){}`~|"%^=_:;?<> ]).{8,}$');
                     if(email.text.length<1){
                       emailError='Field cannot be empty';
                     }
