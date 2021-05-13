@@ -28,7 +28,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final search=TextEditingController();
   List<String> tags=[];
-  List<String> options=['vegetarian','autism','asperger','license','experienced'];
+  List<String> options=['can cook','can cook vegetarian','autism','asperger','ADHD','driving license','first aid knowledge'];
+  var alphabet=['a','b','c','d','e','f','g','h'];
 
   @override
   Widget build(BuildContext context) {
@@ -67,13 +68,14 @@ class _HomeState extends State<Home> {
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                         child: Text(
-                          '$g'
+                            '$g'
                         ),
                       ),
                     ],
                   ),
                   Container(
                     padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+                    alignment: Alignment.center,
                     child: AnimSearchBar(
                       rtl: false,
                       width: 500,
@@ -83,7 +85,7 @@ class _HomeState extends State<Home> {
                       helpText: 'babysitter...',
                       onSuffixTap: (){
                         setState(() {
-                          print(search.text + 'xxxxx');
+                          print(search.text + ' xxxxx');
                           search.clear();
                         });
                       },
@@ -95,26 +97,42 @@ class _HomeState extends State<Home> {
             Padding(
               padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
               child: ChipsChoice<String>.multiple(
-                  value: tags,
-                  onChanged: (val)=>setState((){
-                    tags=val;
-                    for(int x=0;x<tags.length;x++){
-                      print(tags[x]);
-                    }
-                  }),
-                  choiceItems: C2Choice.listFrom(
-                      source: options,
-                      value: (i,v)=>v,
-                      label: (i,v)=>v,
-                  ),
+                value: tags,
+                onChanged: (val)=>setState((){
+                  tags=val;
+                  for(int x=0;x<tags.length;x++){
+                    print(tags[x]);
+                  }
+                }),
+                choiceItems: C2Choice.listFrom(
+                  source: options,
+                  value: (i,v)=>v,
+                  label: (i,v)=>v,
+                ),
                 choiceActiveStyle: (
-                  C2ChoiceStyle(
-                    brightness: Brightness.dark,
-                    color: Colors.purple
-                  )
+                    C2ChoiceStyle(
+                        brightness: Brightness.dark,
+                        color: Colors.purple
+                    )
                 ),
               ),
             ),
+            Container(
+              child: ListView.builder(
+                physics: AlwaysScrollableScrollPhysics(),
+                controller: ScrollController(),
+                shrinkWrap: true, //take space to cover all item in listview IF TRUE, else take whole screen space
+                scrollDirection: Axis.vertical,
+                itemCount: alphabet.length,
+                itemBuilder: (context, index){
+                  return Card(
+                    child: ListTile(
+                      title: Text(alphabet[index]),
+                    ),
+                  );
+                  },
+              ),
+            )
           ],
         ),
       ),
